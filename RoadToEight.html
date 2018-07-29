@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<script type="text/javascript" src="js/jquery.js"></script>
+		<script type="text/javascript" src="js/jquery.bracket.min.js"></script>
+		<script type="text/javascript" src="js/jquery.json.min.js"></script>		
+		<script type="text/javascript" src="matchdata.js"></script>
+		<link rel="stylesheet" type="text/css" href="css/jquery.bracket.min.css" />
+		<link href="css/bootstrap.min.css" rel="stylesheet">
+		<script src="js/bootstrap.bundle.js"></script>
+	</head>
+	<body>	
+	<div id="foo" style="align:center; color:blue;">
+		<h2>“盐官古城杯”2018CBSA中国职业斯诺克巡回赛海宁国际公开赛 - CBSA Haining Open 2018</h2>		
+	</div>
+	<!--
+	<div id="carouselExampleSlidesOnly" class="carousel slide" data-ride="carousel">
+	<div class="carousel-inner">
+		<div class="carousel-item active">
+		<button type="button" class="btn btn-primary">上半区对阵图 - 1st Half</button>			
+			<table>
+				<tr>
+					<td><div id="bracket1"></div></td>
+					<td><div id="bracket2"></div></td>
+				</tr>
+			</table>	
+		</div>
+		<div class="carousel-item">
+			<button type="button" class="btn btn-primary">下半区对阵图 - 2nd Half</button>
+			<table>
+				<tr>
+					<td><div id="bracket3"></div></td>
+					<td><div id="bracket4"></div></td>
+				</tr>
+			</table>
+		</div>
+	</div>	
+	</div>
+	-->
+	
+	<table>
+	
+	<tr>
+		<td><div id="bracket1"></div></td>
+		<td><div id="bracket2"></div></td>
+	</tr>
+	
+	<tr>
+		<td><div id="bracket3"></div></td>
+		<td><div id="bracket4"></div></td>
+	</tr>
+	
+	<tr>
+		<td><div id="bracket5"></div></td>		
+	</tr>	
+	</table>
+	<!--<button id="update">Update Data</button>-->
+	</body>
+	<script>		
+		var tw = 145;
+		var mm = 12;
+		var rm = 10;	
+		
+		$(function() {
+			$('#bracket1').bracket(
+				{
+					disableToolbar:true,
+					skipConsolationRound: true,
+					teamWidth: tw,
+					matchMargin: mm,					
+					roundMargin: rm,
+					save: function(){},
+					init: data1 /* data to initialize the bracket with */ 
+				}
+			)
+			$('#bracket2').bracket(
+				{
+					disableToolbar:true,
+					dir: "rl",
+					skipConsolationRound: true,
+					teamWidth: tw,
+					matchMargin: mm,					
+					roundMargin: rm,
+					save: function(){},
+					init: data2 /* data to initialize the bracket with */ 
+				}
+			)
+			$('#bracket3').bracket(
+				{
+					disableToolbar:true,
+					skipConsolationRound: true,
+					teamWidth: tw,
+					matchMargin: mm,					
+					roundMargin: rm,
+					save: function(){},
+					init: data3 /* data to initialize the bracket with */ 
+				}
+			)
+			$('#bracket4').bracket(
+				{
+					disableToolbar:true,
+					dir: "rl",
+					skipConsolationRound: true,
+					teamWidth: tw,
+					matchMargin: mm,					
+					roundMargin: rm,
+					save: function(){},
+					init: data4 /* data to initialize the bracket with */ 
+				}
+			)
+			$('#bracket5').bracket(
+				{
+					disableToolbar:true,					
+					skipConsolationRound: true,
+					teamWidth: tw,
+					matchMargin: mm*8,					
+					roundMargin: rm*2,
+					save: function(){},
+					init: data5 /* data to initialize the bracket with */ 
+				}
+			)
+		}
+		)
+		
+	
+		
+		
+</script>
+</html>	
