@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="cn">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>2018 浦东唐城世界9球中国公开赛赛事日程</title>
+		<link rel="stylesheet" href="style.css" type="text/css" />
+		<script src="mdata.js" type="text/javascript"></script>
+		<!-- Bootstrap -->
+		<link href="css/bootstrap.min.css" rel="stylesheet">	
+		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+		<script src="jquery-3.3.1.js"></script>
+		<!-- Include all compiled plugins (below), or include individual files as needed -->
+		<script src="js/bootstrap.bundle.js"></script>
+		<!--<script src="js/bootstrap.min.js"></script>-->		
+
+		<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+		<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+		<!--[if lt IE 9]>
+		  <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+		  <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+	</head>
+	<body style="padding: 45px 0px;">	<!--if use tab nav, should have padding on top-->	
+		<nav>
+			<div class="nav nav-tabs fixed-top navbar-expand-sm navbar-light mynav" id="main-nav-tab" role="tablist" >
+				<a class="nav-item nav-link active" id="nav-before-tab" data-toggle="tab" href="#nav-before" role="tab" aria-controls="nav-before" aria-selected="true" >男子 Men</a>
+				<a class="nav-item nav-link" id="nav-in-tab" data-toggle="tab" href="#nav-in" role="tab" aria-controls="nav-in" aria-selected="false">女子 Women</a>				
+			</div>
+		</nav>		
+		<div class="tab-content" id="nav-tabContent">
+			<div class="tab-pane active" id="nav-before" role="tabpanel" aria-labelledby="nav-before-tab">
+				<!-- first tab-->
+				<!-- bottom navigator 
+				<nav class="nav fixed-bottom navbar-light mynav">
+					<a class="nav-link active" href="#preliminary1">第一场 P1</a>
+					<a class="nav-link" href="#preliminary2">第二场 P2</a>
+					<a class="nav-link" href="#preliminary3">第三场 P3</a>					
+				</nav>				-->
+				
+				
+				<div class="container-fluid">
+					<div class="row">					
+						<div class="col-md-4">							
+						</div>					
+						<div class="col-md-4">
+							<button id="ajaxReq" class="btn btn-success" type="button">刷新数据Refresh</button>
+						</div>
+						<div class="col-md-4">							
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-4">							
+						</div>
+						<div class="col-md-4">
+							<span class="badge badge-primary">时间段Session</span>
+							<select id="msessionSel" name="msessionSel" class="selectpicker">								
+							</select>
+						</div>
+						<div class="col-md-4">							
+						</div>
+					</div>
+					<div class="row">
+					<div class="col-md-4">							
+						</div>
+						<div class="col-md-4">
+						<span class="badge badge-primary">阶段 Group</span>
+						<select id = "mgroupSel" name="mgroupSel" class="selectpicker"></select>
+						</div>
+						<div class="col-md-4">							
+						</div>
+					</div>
+					
+					<div class="row">
+						<div class="col-md-4">							
+						</div>
+						<div id="cardListMatch" class="col-md-4">						
+						</div>
+						<div class="col-md-4">							
+						</div>
+					</div>						
+					
+				</div>
+			</div>	
+			<div class="tab-pane fade" id="nav-in" role="tabpanel" aria-labelledby="nav-in-tab">
+				<!-- bottom navigator 
+				<nav class="nav fixed-bottom navbar-light mynav">
+					<a class="nav-link active" href="#mde">男双败 MDE</a>
+					<a class="nav-link active" href="#wde">女双败 WDE</a>
+					<a class="nav-link" href="#mse">MSE</a>
+					<a class="nav-link" href="#wse"></a>					
+				</nav>-->
+				<div class="container-fluid">
+					<div class="row">
+						<div class="col-md-4">							
+						</div>
+						<div class="col-md-4">
+							<button id="ajaxReq" class="btn btn-success" type="button">刷新数据Refresh</button>
+						</div>
+						<div class="col-md-4">							
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-4">							
+						</div>
+						<div class="col-md-4">
+							<span class="badge badge-primary">时间段Session</span>
+							<select id="wsessionSel" name="wsessionSel" class="selectpicker">								
+							</select>
+						</div>
+						<div class="col-md-4">							
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-4">							
+						</div>
+						<div class="col-md-4">
+						<span class="badge badge-primary">阶段 Group</span>
+						<select id = "wgroupSel" name="wgroupSel" class="selectpicker"></select>
+						</div>
+						<div class="col-md-4">							
+						</div>
+					</div>
+					
+					<div class="row">
+						<div class="col-md-4">							
+						</div>
+						<div id="cardListMatchW" class="col-md-4">						
+						</div>
+						<div class="col-md-4">							
+						</div>
+					</div>
+				</div>	
+			</div>
+			
+		</div>
+	</body>
+	<!--<script src="js/matchschedule.js?ver=1232564545"></script>-->
+	<script>
+		var g_all_text = "所有 All";
+var g_unschedule = "未定 unsheduled";
+
+//global variants operation should be put first!!!
+
+InitializePage();
+
+//ajax way to reload data in pages
+$(document).ready(function(){
+	$("button#ajaxReq").click(function(){
+		//console.log("click");
+		$.ajax({url:"mdata.js" + "?v=" + Math.random(),async:true,success:function(result){
+			//console.log(result);
+			FilterMatches("M");
+			FilterMatches("W");
+			$("button#ajaxReq").css({"outline":"none","box-shadow":"none",});
+			//$("button#ajaxReq").style.box-shadow = none;			
+		}});
+	});
+});
+
+
+function InitializePage(){
+	var matchObj;
+	matchObj = GetMatchDataObj();
+	LoadSessionsIntoSel(matchObj, "M", $("select#msessionSel"), $("select#mgroupSel"));
+	LoadSessionsIntoSel(matchObj, "W", $("select#wsessionSel"), $("select#wgroupSel"));
+	LoadManMatches("", "");
+	LoadWomanMatches("", "");	
+	//clearScore();
+}
+
+function LoadManMatches(sf, gf){
+	var matchObj;
+	matchObj = GetMatchDataObj();
+	LoadMatchesIntoTab(matchObj, $("div#cardListMatch"), "M", sf, gf);
+}
+
+function LoadWomanMatches(sf, gf){
+	var matchObj;
+	matchObj = GetMatchDataObj();
+	LoadMatchesIntoTab(matchObj, $("div#cardListMatchW"), "W", sf, gf);
+}
+
+function GetMatchDataObj(){
+	var m = matches;
+	return m;
+}
+
+//flag "M" or "W"
+function LoadSessionsIntoSel(matchObj, flag, sessionSel, groupSel){
+	var sessions = new Map();
+	var groups = new Map()
+	
+	for (var i = 0; i < matchObj.length; i++){		
+		var k = matchObj[i].Session
+		var e = matchObj[i].Date + " " + matchObj[i].Time;
+		
+		//unschedule time
+		if (k == ""){
+			k = "unscheduled";
+			e = g_unschedule;
+		}
+		
+		if (matchObj[i].S == flag && !sessions.has(k))
+			sessions.set(k, e);
+		
+		var g = matchObj[i].G;
+				
+		if (matchObj[i].S == flag && !groups.has(g))
+			groups.set(g, matchObj[i].GN);
+	}
+	
+	var items1 = Array.from(sessions.values());
+	var items2 = Array.from(groups.values());
+	items1.sort();
+	items2.sort();	
+	
+	sessionSel.append($("<option></option>").text(g_all_text));
+	for (var value of items1) {
+		var opt = $("<option></option>").text(value);
+		sessionSel.append(opt);
+	}
+	
+	groupSel.append($("<option></option>").text(g_all_text));
+	for (var value of items2) {
+		var opt = $("<option></option>").text(value);
+		groupSel.append(opt);
+	}
+}
+
+$("select#msessionSel").change(
+	function(){		
+		FilterMatches("M");
+		
+	}
+)
+
+$("select#mgroupSel").change(
+	function(){		
+		FilterMatches("M");		
+	}
+)
+
+$("select#wsessionSel").change(
+	function(){		
+		FilterMatches("W");
+		
+	}
+)
+
+$("select#wgroupSel").change(
+	function(){		
+		FilterMatches("W");		
+	}
+)
+
+//$('.carousel').bcSwipe({ threshold: 50 });
+$(".carousel").on("touchstart", function(event){
+        var xClick = event.originalEvent.touches[0].pageX;
+    $(this).one("touchmove", function(event){
+        var xMove = event.originalEvent.touches[0].pageX;
+        if( Math.floor(xClick - xMove) > 5 ){
+            $(this).carousel('next');
+        }
+        else if( Math.floor(xClick - xMove) < -5 ){
+            $(this).carousel('prev');
+        }
+    });
+    $(".carousel").on("touchend", function(){
+            $(this).off("touchmove");
+    });
+});
+
+$('.carousel').carousel({
+    pause: true,
+	interval: false,
+	wrap:true,
+});
+
+function FilterMatches(m){
+	var sf, gf;
+	
+	if (m == "M"){
+		sf = $("select#msessionSel").find("option:selected").text();
+		gf = $("select#mgroupSel").find("option:selected").text();
+		if (sf == g_all_text) sf = "";
+		if (gf == g_all_text) gf = "";
+		LoadManMatches(sf, gf);
+	}
+	else{
+		sf = $("select#wsessionSel").find("option:selected").text();
+		gf = $("select#wgroupSel").find("option:selected").text();
+		if (sf == g_all_text) sf = "";
+		if (gf == g_all_text) gf = "";
+		LoadWomanMatches(sf, gf);
+	}
+}
+
+function GetKey(m){
+	var g = m.G;
+	if (g == "")
+		g = "Z";
+		
+	return m.Session + m.S + g + pad(m.N, 4);
+}
+
+
+function pad(num, n) {
+    var len = num.toString().length;
+    while(len < n) {
+        num = "0" + num;
+        len++;
+    }
+    return num;
+}
+
+
+function LoadMatchesIntoTab(matchObj, table, gender, sf, gf){
+	//alert("load players");
+	table.empty();
+	
+	var mm = new Map();
+	for (var i = 0; i < matchObj.length; i++){
+		if (gender != ""){
+			if (gender != matchObj[i].S)
+				continue;
+		}
+		
+		if (sf != ""){
+			if (sf == g_unschedule){
+				if (matchObj[i].Date != "" && matchObj[i].Time != "")
+					continue;
+			}
+			else if (sf != matchObj[i].Date + " " + matchObj[i].Time){
+				continue;
+			}
+		}
+		
+		if (gf != ""){
+			if (gf != matchObj[i].GN)
+				continue;
+		}		
+		mm.set(GetKey(matchObj[i]), matchObj[i]);
+	}
+	
+	var keys = Array.from(mm.keys())
+	keys.sort();
+	
+	for (var i = 0; i < keys.length; i++){
+		var div = $("<div class=\"card\" style=\"padding: 2px;margin: 2px;\"></div>");	
+		var div2 = $("<div class=\"card-body\" style=\"padding: 0px;\"></div>");
+		var item = mm.get(keys[i]);
+		
+		var tx1 = item.ID + " " + item.Date + " " + item.Time + " " + item.DES;
+		if (item.Table != "") tx1 += (" T:" + item.Table);
+		
+		
+		var tx2, tx3;
+		if (item.S1 == "")
+			tx2 = " " + " - " + item.P1;
+		else
+			tx2 = item.S1 + " - " + item.P1;
+		
+		if (item.S2 == "")
+			tx3 = " " + " - " + item.P2;
+		else
+			tx3 = item.S2 + " - " + item.P2;
+		
+		
+		
+		div.append($("<h6 style=\"padding: 2px;font-size: 0.95rem\" class=\"card-title bg-light\"></h6>").text(tx1));
+		div.append($("<p style=\"padding: 0px; font-size: 0.95rem\" class=\"card-subtitle mb-2 text-muted\"></p>").text(tx2));
+		div.append($("<p style=\"padding: 0px; font-size: 0.95rem\" class=\"card-subtitle mb-2 text-muted\"></p>").text(tx3));
+		div.append(div2);
+		table.append(div);		
+	}
+}
+
+	</script>
+</html>
