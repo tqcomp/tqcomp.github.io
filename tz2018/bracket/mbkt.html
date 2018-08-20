@@ -4,7 +4,7 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <title>移动版对阵图 Bracket Mobile</title>
+    <title>2018 浦东唐城世界9球中国公开赛对阵图</title>
     <link href="./css/bootstrap.css" rel="stylesheet">
     <link href="./css/bootstrap-treeview.css" rel="stylesheet">
   </head>
@@ -40,14 +40,24 @@
     <script src="../jquery-3.3.1.js"></script>
   	<script src="./js/bootstrap-treeview.js"></script>
 	<script src="./js/bootstrap.min.js"></script>
-	<script src="../mdata.js?v=20180816" type="text/javascript"></script>
+	<!--<script src="../mdata.js?v=20180816" type="text/javascript"></script>-->
   	<script type="text/javascript">
 	
 	$(document).ready(function(){
-		$.ajax({url:"../mdata.js" + "?v=" + Math.random(),async:true,success:function(result){
-			getMatches(getUrlVars()["s"], getUrlVars()["g"], showMatches);
+		var s = String(getUrlVars()["s"]).toUpperCase();
+		var g = String(getUrlVars()["g"]).toUpperCase();
+		
+		var ds;
+		if(g >= "P" && g <="U")
+			if ((s) === "W")
+				ds = "../pwdata.js";
+			else
+				ds = "../pmdata.js";
+		else
+			ds = "../mdata.js";
 			
-			main();
+		$.ajax({url:ds + "?v=" + Math.random(),async:true,success:function(result){			
+			main(s, g);
 		}});		
 	});
 	
@@ -55,12 +65,12 @@
 	var g_isSEBkt;
 	var g_trees = [];
 	
-	setGroupName();
 	
-	function setGroupName(){
+	
+	function setGroupName(s, g){
 		var gdict = GetGroupDataObj();
 		
-		var g = getUrlVars()["g"].toUpperCase();
+		//var g = getUrlVars()["g"].toUpperCase();
 		var gn = gdict[g];
 
 		if (g >="A" && g<="H"){
@@ -71,7 +81,7 @@
 		}
 		
 		var sdict = GetGenderDataObj();
-		var s = getUrlVars()["s"].toUpperCase();
+		//var s = getUrlVars()["s"].toUpperCase();
 		var sn = sdict[s];	
 		$("div#groupName").text(sn + " " + gn);
 		console.log(sn);
@@ -142,6 +152,7 @@
 	function getMatchDisplay(index, which){
 		
 		var m = findMatchByNo(showMatches, index);
+		
 		if (!m)
 			return "";
 		var n1, n2;
@@ -173,19 +184,48 @@
 	
 	
 	
-	function main(){
+	function main(s, g){
+		setGroupName(s, g);
+		getMatches(s, g, showMatches);
 		var mtree;
-		if (g_isSEBkt){
-			var mtree = constructMatchTree(showMatches);
-			if (getUrlVars()["g"].toUpperCase() == ""){
-				mtree.icon = "glyphicon glyphicon-flag";	
-			} //if it is final
-
+		var mns;
+		
+		if (g === ""){
+			//if it is road to final
+			if (s == "W")
+				mtree = constructSEMatchTree(showMatches, 16);
+			else
+				mtree = constructSEMatchTree(showMatches, 32);
+			mtree.icon = "glyphicon glyphicon-flag";
 			g_trees.push(mtree);
-
 		}
-		else{
-			if (getUrlVars()["s"].toUpperCase() == "W")
+		else if (g >="P" && g <= "R"){
+			//it's preliminary
+			let rstart;
+			let rend;
+			if (g == "P" || g == "Q"){
+				//only 2 are promoted
+				rstart = 1;
+				rend = 2;
+			}
+			else{
+				rstart = 3;
+				rend = 6;
+			}
+			
+			if (s === "W")
+				mns = fillMatchNumbersSE(63);
+			else if (s === "M")
+				mns = fillMatchNumbersSE(127);
+			
+			for (let idx = rend; idx >= rstart; idx--){
+					mtree = buildDEBinaryTree(mns, idx, true);
+					mtree.icon = "glyphicon glyphicon-ok-sign";
+					g_trees.push(mtree);
+			}			
+		}
+		else if (g >="A" && g <= "H"){
+			if (s == "W")
 				var dematches = fillMatchNumberDE(6, 8);
 			else
 				var dematches = fillMatchNumberDE(8, 8);
@@ -579,14 +619,14 @@
 	}
 	*/
 	
-	function constructMatchTree(matches){
-		var maxNo = findMaxMatchNo(matches);
-		if (!isValidSEBracketSize(maxNo + 1)){
-			console.log(maxNo + " is not valid to construct a matches tree");
+	function constructSEMatchTree(matches, size){
+		if (!isValidSEBracketSize(size)){
+			console.log(size + " is not valid to construct a matches tree");
+			return;
 		}
 		
 		var mns;		
-		mns = fillMatchNumbersSE(maxNo);		
+		mns = fillMatchNumbersSE(size - 1);		
 		return buildDEBinaryTree(mns, 0, true);	
 	}
 	
