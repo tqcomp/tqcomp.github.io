@@ -36,11 +36,27 @@
 						<div class="col-md-4">							
 						</div>					
 						<div class="col-md-4">
-							<button id="ajaxReq" class="btn btn-success" type="button">刷新数据Refresh</button>
+							<button id="ajaxReq" class="btn btn-success btn-block" type="button">刷新数据Refresh</button>
 						</div>
 						<div class="col-md-4">							
 						</div>
 					</div>
+					<div class="row">
+						<div class="col-md-4">
+						</div>					
+						<div class="col-md-4">
+						  <!-- <form> -->
+							<div class="form-group">
+							  <label for="input-search" class="sr-only">Search Tree:</label>
+							  <input type="input" class="form-control" id="input-search" placeholder="搜索球员 Type to search player..." value="">							
+							<button type="button" class="btn btn-success" id="btn-search">搜索Search</button>
+							<button type="button" class="btn btn-light" id="btn-clear-search">清除Clear</button>
+							</div>            
+						  <!-- </form> -->		  
+						</div>
+						<div class="col-md-4">
+						</div>
+					</div>	
 					<div class="row">
 						<div class="col-md-4">							
 						</div>
@@ -80,11 +96,27 @@
 						<div class="col-md-4">							
 						</div>
 						<div class="col-md-4">
-							<button id="ajaxReq" class="btn btn-success" type="button">刷新数据Refresh</button>
+							<button id="ajaxReq" class="btn btn-success btn-block" type="button">刷新数据Refresh</button>
 						</div>
 						<div class="col-md-4">							
 						</div>
 					</div>
+					<div class="row">
+						<div class="col-md-4">
+						</div>					
+						<div class="col-md-4">
+						  <!-- <form> -->
+							<div class="form-group">
+							  <label for="input-search" class="sr-only">Search Tree:</label>
+							  <input type="input" class="form-control" id="input-search2" placeholder="搜索球员 Type to search player..." value="">							
+							<button type="button" class="btn btn-success" id="btn-search2">搜索Search</button>
+							<button type="button" class="btn btn-light" id="btn-clear-search2">清除Clear</button>
+							</div>            
+						  <!-- </form> -->		  
+						</div>
+						<div class="col-md-4">
+						</div>
+					</div>	
 					<div class="row">
 						<div class="col-md-4">							
 						</div>
@@ -204,12 +236,12 @@ function LoadDataToArray(dataObj, arrMatch, s, g){
 }
 
 //sf is session filter, gf is group filter
-function LoadManMatches(sf, gf){	
-	LoadMatchesIntoTab(g_matches, $("div#cardListMatch"), "M", sf, gf);
+function LoadManMatches(sf, gf, nf){	
+	LoadMatchesIntoTab(g_matches, $("div#cardListMatch"), "M", sf, gf, nf);
 }
 
-function LoadWomanMatches(sf, gf){	
-	LoadMatchesIntoTab(g_matches2, $("div#cardListMatchW"), "W", sf, gf);
+function LoadWomanMatches(sf, gf, nf){	
+	LoadMatchesIntoTab(g_matches2, $("div#cardListMatchW"), "W", sf, gf, nf);
 }
 
 function GetMatchDataObj(){
@@ -323,14 +355,14 @@ function FilterMatches(m){
 		gf = $("select#mgroupSel").find("option:selected").text();
 		if (sf == g_all_text) sf = "";
 		if (gf == g_all_text) gf = "";
-		LoadManMatches(sf, gf);
+		LoadManMatches(sf, gf, $('#input-search').val());
 	}
 	else{
 		sf = $("select#wsessionSel").find("option:selected").text();
 		gf = $("select#wgroupSel").find("option:selected").text();
 		if (sf == g_all_text) sf = "";
 		if (gf == g_all_text) gf = "";
-		LoadWomanMatches(sf, gf);
+		LoadWomanMatches(sf, gf, $('#input-search2').val());
 	}
 }
 
@@ -353,7 +385,7 @@ function pad(num, n) {
 }
 
 
-function LoadMatchesIntoTab(matchObj, table, gender, sf, gf){
+function LoadMatchesIntoTab(matchObj, table, gender, sf, gf, nf){
 	//alert("load players");
 	table.empty();
 	
@@ -383,7 +415,13 @@ function LoadMatchesIntoTab(matchObj, table, gender, sf, gf){
 				if (gf != matchObj[i].GN)
 					continue;
 			}			
-		}		
+		}
+
+			
+		if (nf != ""){
+			if (matchObj[i].P1.toUpperCase().indexOf(nf.toUpperCase()) === -1 && matchObj[i].P2.toUpperCase().indexOf(nf.toUpperCase()) === -1)
+				continue;
+		}	
 		mm.set(GetKey(matchObj[i]), matchObj[i]);
 	}
 	
@@ -419,6 +457,32 @@ function LoadMatchesIntoTab(matchObj, table, gender, sf, gf){
 		table.append(div);		
 	}
 }
+
+
+
+
+$('#btn-search').on('click', function(){FilterMatches("M")});
+$('#input-search').on('keydown', function(e){
+	if (e.keyCode == 13)
+		FilterMatches("M");
+});
+
+$('#btn-clear-search').on('click', function (e) {    
+    $('#input-search').val('');
+	FilterMatches("M");
+});
+
+
+$('#btn-search2').on('click', function(){FilterMatches("W")});
+$('#input-search2').on('keydown', function(e){
+	if (e.keyCode == 13)
+		FilterMatches("W");
+});
+
+$('#btn-clear-search2').on('click', function (e) {    
+    $('#input-search2').val('');
+	FilterMatches("W");
+});
 
 	</script>
 </html>
