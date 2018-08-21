@@ -218,6 +218,7 @@ function LoadData(g, restart){
 		}});
 		
 		$.ajax({url:"pwdata.js" + "?v=" + Math.random(),async:true,success:function(result){
+			g_matches2 = [];			
 			LoadDataToArray(GetMatchDataObj(), g_matches2, "W", g);
 			if (restart)
 				LoadFilters(g_matches2, "W", $("select#wsessionSel"), $("select#wgroupSel"));
@@ -229,7 +230,7 @@ function LoadData(g, restart){
 
 function LoadDataToArray(dataObj, arrMatch, s, g){
 	dataObj.forEach(function(e){
-		if (s === e.S && ( g === "" || g === e.G)){			
+		if (s === e.S && ( g === "" || g === e.G) && e.P1 !== "BYE" & e.P2 != "BYE"){			
 			arrMatch.push(e);
 		}		
 	});	
