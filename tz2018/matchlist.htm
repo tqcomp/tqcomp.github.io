@@ -467,11 +467,20 @@ function LoadMatchesIntoTab(matchObj, table, gender, sf, gf, nf){
 		else
 			tx3 = item.S2 + " - " + item.P2;
 		
+		div.append($("<h6 style=\"padding: 2px;font-size: 0.95rem\" class=\"card-title bg-light\"></h6>").text(tx1));		
 		
-		
-		div.append($("<h6 style=\"padding: 2px;font-size: 0.95rem\" class=\"card-title bg-light\"></h6>").text(tx1));
-		div.append($("<p style=\"padding: 0px; font-size: 0.95rem\" class=\"card-subtitle mb-2 text-muted\"></p>").text(tx2));
-		div.append($("<p style=\"padding: 0px; font-size: 0.95rem\" class=\"card-subtitle mb-2 text-muted\"></p>").text(tx3));
+		if (item.WIN == "1"){
+			div.append($("<p style=\"padding: 0px; font-size: 0.95rem\" class=\"card-subtitle mb-2\"></p>").text(tx2));
+			div.append($("<p style=\"padding: 0px; font-size: 0.95rem\" class=\"card-subtitle mb-2 text-muted\"></p>").text(tx3));
+		}
+		else if (item.WIN == "2"){
+			div.append($("<p style=\"padding: 0px; font-size: 0.95rem\" class=\"card-subtitle mb-2 text-muted\"></p>").text(tx2));
+			div.append($("<p style=\"padding: 0px; font-size: 0.95rem\" class=\"card-subtitle mb-2\"></p>").text(tx3));
+		}
+		else{
+			div.append($("<p style=\"padding: 0px; font-size: 0.95rem\" class=\"card-subtitle mb-2\"></p>").text(tx2));
+			div.append($("<p style=\"padding: 0px; font-size: 0.95rem\" class=\"card-subtitle mb-2\"></p>").text(tx3));
+		}		
 		div.append(div2);
 		table.append(div);		
 	}

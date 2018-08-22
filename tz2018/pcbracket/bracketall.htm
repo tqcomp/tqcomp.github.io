@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<script type="text/javascript" src="../jquery-3.3.1.js"></script>
+		<script type="text/javascript" src="./js/jquery.bracket.min.js"></script>		
+		<!--<script type="text/javascript" src="matchdata.js"></script>-->
+		<!--<script type="text/javascript" src="config.js?v=100"></script>-->
+		<link rel="stylesheet" type="text/css" href="./css/jquery.bracket.min.css" />
+		<link href="../css/bootstrap.min.css" rel="stylesheet">
+		<!--<script src="../js/bootstrap.bundle.js"></script>-->
+	</head>
+	<body>
+	<div style="margin-left:30px;text-align:center;">	
+		<div style="text-align:center;">
+			<h3>2018浦东唐城世界9球中国公开赛 - 2018 Pudong Tangcheng World 9 Ball China Open</h3>
+		</div>	
+		<h4><div id="btitle" class="btn-light"></div></h4>
+		<table style="margin:0 auto">	
+		<tr><td><div id="bracket0"></div></td></tr>
+		<tr><td><h5><div id="stitle1" class="btn-danger"></div></h5></td></tr>	
+		<tr><td><div id="bracket1"></div></td><tr>
+		<tr><td><h5><div id="stitle2" class="btn-danger"></div></h5></td></tr>	
+		<tr><td><div id="bracket2"></div></td><tr>
+		<tr><td><h5><div id="stitle3" class="btn-danger"></div></h5></td></tr>	
+		<tr><td><div id="bracket3"></div></td><tr>
+		<tr><td><h5><div id="stitle4" class="btn-danger"></div></h5></td></tr>	
+		<tr><td><div id="bracket4"></div></td><tr>
+		<tr><td><h5><div id="stitle5" class="btn-danger"></div></h5></td></tr>	
+		<tr><td><div id="bracket5"></div></td><tr>
+		<tr><td><h5><div id="stitle6" class="btn-danger"></div></h5></td></tr>	
+		<tr><td><div id="bracket6"></div></td><tr>
+		<tr><td><h5><div id="stitle7" class="btn-danger"></div></h5></td></tr>	
+		<tr><td><div id="bracket7"></div></td><tr>	
+		</table>
+	</div>
+	</body>
+	<script src="../js/bktalgo.js"></script>
+	<script>
+
+
+function main(){
+	var s = String(getUrlVars()["s"]).toUpperCase();
+	var g = String(getUrlVars()["g"]).toUpperCase();	
+	LoadData(s, g);
+}
+
+function setGroupName(s, g){
+		var gdict = GetGroupDataObj();	
+		var gn = gdict[g];	
+		var sdict = GetGenderDataObj();		
+		var sn = sdict[s];	
+		$("div#btitle").text(sn + " " + gn);
+		$(document).attr("title",sn + " " + gn);
+}
+
+function GetGroupDataObj(){
+		var g = groups;
+		return g;
+	}
+	
+function GetGenderDataObj(){
+		var g = genders;
+		return g;
+}
+
+
+//return [bracketsize, type, realsize]
+function getBracketSize(s, g){
+	if (getStage(g) == 1){
+		return (s == "W")? [64,1,64] : [128,1,128];
+	}
+	else {
+		if (g == ""){
+			return (s == "W")? [16,1,16] : [32,1,32];
+		}
+		else {
+			return (s == "W")? [8,2,6] : [8,2,8];
+		}
+	}
+}
+
+function getPageSize(s, g){
+	var rtn = 1;
+	var stage = getStage(g);
+	if (stage == 1){
+		if (g == "P" || g == "Q"){
+			rtn = (s == "M") ? 64 : 32;
+		}
+		else{
+			rtn = (s == "M") ? 32 : 16;
+		}
+	}
+	else{
+		rtn = (s == "M") ? 32 : 16;
+	}
+	return rtn;
+}
+
+
+function getStage(g){
+	return ( g >= "P" && g <= "U" ) ? 1 : 2;		
+}
+
+function LoadData(s, g){
+	var fileName;
+	if (getStage(g) == 2){
+		fileName = "../mdata.js";
+	}
+	else{
+		fileName = (s === "W") ? "../pwdata.js" : "../pmdata.js";
+	}
+	
+	$.ajax({url:fileName + "?v=" + Math.random(),async:true,success:function(result){		
+			var mapMatches = LoadDataToMap(GetMatchDataObj(), s, g);
+			var competitors = [];
+			var results;
+			setGroupName(s, g);	
+			results = FillMatchesObj(s, g, mapMatches, competitors);
+			ShowTrees(competitors, results);
+	}});	
+}
+
+function bdata(){
+	this.teams = [];
+	this.results = [];
+}
+
+function FillMatchesObj(s, g, mapMatch, arrayComp){
+	var bsize = getBracketSize(s, g);
+	var firstRndCount = bsize[0] / 2;
+	var pageSize = getPageSize(s, g);
+	var pageCount; //how many pages, how many teams/players
+	var comp;
+	var p1, p2;
+	var mns;
+	var m;
+	
+	var results = [];
+	mns = fillMatchNumberDuel(bsize[2], bsize[0], bsize[1], false)
+	//calculate how many pages
+	pageCount = (bsize[0] <= pageSize)? 1 : bsize[0] / pageSize;
+	
+	//if de, only one page	
+	if (bsize[1] == 2)
+		pageCount = 1;
+		
+	if (pageCount == 1){		
+		pageSize = bsize[0];		
+	}	
+	
+	//i denotes page
+	for (let i = 0; i < pageCount; i++){
+		var pageMax = (i + 1) * pageSize / 2; //how many matches		
+		comp = [];
+		results[i] = [];
+		results[i][0] = [];	
+				
+		for (let j = i * pageSize / 2; j < pageMax; j++){
+			var virtualNo = mns[0][j][0];
+			var realNo = mns[0][j][1];
+			if ( 0 == realNo ){
+				//this is a bye match
+				var parent = findValidParent(mns[0], j, pageMax, 0);
+				if (parent != -1)
+				{
+					m = mapMatch.get(mns[0][parent][1].toString());
+					if (j % 2 == 0){
+						p1 = (m.P12.length > 17)? m.P13 : m.P12;
+						p2 = null;
+					}
+					else {
+						p2 = (m.P22.length > 17)? m.P23 : m.P22;
+						p1 = null;
+					}
+					comp.push([p1, p2]);
+				}
+				else
+				{
+					comp.push([null, null]);
+					Console.log("Please check! bracketall.htm");
+				}
+				results[i][0].push([]);
+			}	
+			else{
+				m = mapMatch.get(realNo.toString());
+				p1 = (m.P12.length > 20)? m.P13 : m.P12;
+				p2 = (m.P22.length > 20)? m.P23 : m.P22;			
+				comp.push([p1, p2]);
+				if (m.WIN != "0"){
+					results[i][0].push([parseInt(m.S1), parseInt(m.S2)]);
+				}
+				else{
+					results[i][0].push([]);
+				}
+			}			
+		}
+		
+		arrayComp.push(comp);
+		var leftLevel = Math.log(pageMax - i * pageSize / 2)/Math.log(2);			
+		for (let k = 1; k < leftLevel + 1; k++){
+			var levelMatches = [];
+			results[i][k] = [];
+			mns[0].forEach(function(e){
+				if (e[2] == k + 1)
+					levelMatches.push(e);
+			})
+			levelMatches.sort(function(a,b){return parseInt(a[0])-parseInt(b[0])});
+			var secSize = levelMatches.length / pageCount;
+			var start = i * secSize;
+			for (let idx = i * secSize; idx < (i+1) * secSize; idx++){
+				m = mapMatch.get(levelMatches[idx][1].toString());
+				if (!m)
+					results[i][k].push([]);
+				else if (m.WIN != "0")
+					results[i][k].push([parseInt(m.S1), parseInt(m.S2)]);
+				else
+					results[i][k].push([]);				
+			}			
+		}
+	}
+
+	//if its double elimination	
+	if (mns[1].length > 0){
+		let rnd = 0;
+		var lbresult = [];
+		for(let idx = 0; idx < mns[1].length; idx++){
+			if (rnd != mns[1][idx][2]){
+				lbresult[rnd] = [];
+				rnd++;
+			}				
+			m = mapMatch.get(mns[1][idx][1].toString());
+			if (!m)
+				lbresult[rnd-1].push([]);
+			else if (m.WIN != "0")
+				lbresult[rnd-1].push([parseInt(m.S1), parseInt(m.S2)]);
+			else
+				lbresult[rnd-1].push([]);
+		}
+		
+		var wbresult = results[0];
+		results = [];
+		results[0] = [];
+		results[0].push(wbresult);
+		results[0].push(lbresult);
+		results[0].push([]);
+	}
+	
+	//if show final page
+	/*
+	var fpage = 8;
+	if (isShowFinal8(s, g)){
+		var fmns = getSEFinal(fpage, bsize[0], mns);
+		for (let idx = 0; idx < fpage / 2; idx++){
+			
+		}
+	}
+	*/
+	return results;
+}
+
+
+function ShowTrees(competitors, results){
+	var count = competitors.length;
+	
+	for (var i = 0; i < competitors.length; i++){
+		var d = new bdata();
+		d.teams = competitors[i];		
+		d.results = results[i];
+		var bcp = {
+			skipConsolationRound:true,
+			teamWidth: 200,
+			matchMargin: 15,
+			roundMargin: 20,
+		};
+		if (d.teams.length < 16)
+			bcp.matchMargin *= 2;
+		bcp.init = d;
+		//bcp.dir = (i % 2 == 0) ? "lr":"rl";		
+		var bname = (count == 1)? "#bracket0" : "#bracket" + (i + 1);
+		$(bname).bracket( bcp );		
+	}
+	
+	
+	
+	if (count > 1){
+		if (count >= 7)
+			count = 7;
+		for (let j = 1; j <=count; j++){
+			var tname = "#stitle" + j;
+			$(tname).text(j + " of " + count);
+		}
+	}	
+}
+
+
+
+function GetMatchDataObj(){
+	var m = matches;
+	return m;
+}
+
+function LoadDataToArray(d, arrMatch, s, g){
+	d.forEach(function(e){
+		if (s == e.S && g == e.G){			
+			arrMatch.push(e);
+		}		
+	});
+	arrMatch.sort(function(a, b){return a.N - b.N});
+}
+
+function LoadDataToMap(d, s, g){	
+	var rtn = new Map();	
+	d.forEach(function(e){
+		if (s == e.S && g == e.G){			
+			rtn.set(e.N, e);
+		}		
+	});
+	return rtn;
+}
+
+function getUrlVars(){
+	var vars = [], hash;
+	var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+	for (var i = 0; i < hashes.length; i++) {
+		hash = hashes[i].split('=');
+		vars.push(hash[0]);
+		vars[hash[0]] = hash[1];
+	}
+	return vars;
+}	
+	
+$(function() {
+	main();
+	/*
+	bcp.init = data1;
+	$('#bracket1').bracket( bcp )
+	bcp.init = data2;
+	bcp.dir = "rl"
+	$('#bracket2').bracket(	bcp )
+	bcp.init = data3;
+	bcp.dir = "lr"			
+	$('#bracket3').bracket( bcp )
+	
+	bcp.init = data4;
+	bcp.dir = "rl"			
+	$('#bracket4').bracket( bcp )
+	
+	$('#bracket5').bracket(
+		{
+			skipConsolationRound: true,
+			teamWidth: tw,
+			matchMargin: mm*8,					
+			roundMargin: rm*2,
+			init: data5 //data to initialize the bracket with 
+		}
+	)
+	*/
+}
+)
+		
+</script>
+</html>	
