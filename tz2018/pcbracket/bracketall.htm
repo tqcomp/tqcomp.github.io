@@ -97,6 +97,48 @@ function getPageSize(s, g){
 	return rtn;
 }
 
+function getFillScorePair(m){
+	var s1, s2;
+	if (m.S1 == ""){
+		s1 = null;
+	}
+	else if (m.S1 === null){
+		s1 = null;
+	}
+	else{
+		s1 = parseInt(m.S1);
+	}
+		
+	if (m.S2 == ""){
+		s2 = null;
+	}
+	else if (m.S2 === null){
+		s2 = null;
+	}
+	else{
+		s2 = parseInt(m.S2);
+	}
+	
+	return [s1, s2];		
+}
+
+function getFillCompPair(m){
+	var c1, c2;
+	if (m.P1 == "BYE"){
+		c1 = null;
+	}
+	else{
+		c1 = (m.P12.length > 20)? m.P13 : m.P12;
+	}
+	
+	if (m.P2 == "BYE"){
+		c2 = null;
+	}
+	else{
+		c2 = (m.P22.length > 20)? m.P23 : m.P22;
+	}
+	return [c1, c2];
+}
 
 function getStage(g){
 	return ( g >= "P" && g <= "U" ) ? 1 : 2;		
@@ -165,15 +207,14 @@ function FillMatchesObj(s, g, mapMatch, arrayComp){
 				if (parent != -1)
 				{
 					m = mapMatch.get(mns[0][parent][1].toString());
+					let fillPair = getFillCompPair(m);
 					if (j % 2 == 0){
-						p1 = (m.P12.length > 17)? m.P13 : m.P12;
-						p2 = null;
+						fillPair[1] = null;
 					}
 					else {
-						p2 = (m.P22.length > 17)? m.P23 : m.P22;
-						p1 = null;
+						fillPair[0] = null;
 					}
-					comp.push([p1, p2]);
+					comp.push(fillPair);
 				}
 				else
 				{
@@ -184,11 +225,9 @@ function FillMatchesObj(s, g, mapMatch, arrayComp){
 			}	
 			else{
 				m = mapMatch.get(realNo.toString());
-				p1 = (m.P12.length > 20)? m.P13 : m.P12;
-				p2 = (m.P22.length > 20)? m.P23 : m.P22;			
-				comp.push([p1, p2]);
+				comp.push(getFillCompPair(m));
 				if (m.WIN != "0"){
-					results[i][0].push([parseInt(m.S1), parseInt(m.S2)]);
+					results[i][0].push(getFillScorePair(m));
 				}
 				else{
 					results[i][0].push([]);
@@ -213,7 +252,7 @@ function FillMatchesObj(s, g, mapMatch, arrayComp){
 				if (!m)
 					results[i][k].push([]);
 				else if (m.WIN != "0")
-					results[i][k].push([parseInt(m.S1), parseInt(m.S2)]);
+					results[i][k].push(getFillScorePair(m));
 				else
 					results[i][k].push([]);				
 			}			
@@ -233,7 +272,7 @@ function FillMatchesObj(s, g, mapMatch, arrayComp){
 			if (!m)
 				lbresult[rnd-1].push([]);
 			else if (m.WIN != "0")
-				lbresult[rnd-1].push([parseInt(m.S1), parseInt(m.S2)]);
+				lbresult[rnd-1].push(getFillScorePair(m));
 			else
 				lbresult[rnd-1].push([]);
 		}
@@ -312,7 +351,23 @@ function LoadDataToArray(d, arrMatch, s, g){
 function LoadDataToMap(d, s, g){	
 	var rtn = new Map();	
 	d.forEach(function(e){
-		if (s == e.S && g == e.G){			
+		if (s == e.S && g == e.G){
+			if (e.S1.toUpperCase() == "W/O"){
+				e.S1 = "1";
+				e.S2 = "0";
+			}
+			else if (e.S2.toUpperCase() == "W/O"){
+				e.S1 = "0";
+				e.S2 = "1";
+			}
+			
+			if (e.P1.toUpperCase() == "BYE"){
+				e.S1 = null;				
+			}
+			
+			if (e.P2.toUpperCase() == "BYE"){				
+				e.S2 = null;
+			}
 			rtn.set(e.N, e);
 		}		
 	});
